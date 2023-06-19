@@ -13,7 +13,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:theme="@style/Theme.SharedPreferencesViewer">
         <activity
-            android:name=".ui.activities.AppListActivity"
+            android:name=".ui.activities.SplashActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -21,6 +21,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".ui.activities.AppListActivity"/>
         <activity android:name=".ui.activities.SPFileListActivity" />
         <activity android:name=".ui.activities.SPViewerActivity" />
     </application>
