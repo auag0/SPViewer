@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.os.Build
+import androidx.core.graphics.drawable.toBitmap
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -23,7 +24,7 @@ class AppListViewModel(private val app: Application) : AndroidViewModel(app) {
                     App(
                         it.packageName,
                         it.loadLabel(pm).toString(),
-                        it.loadIcon(pm)
+                        it.loadIcon(pm).toBitmap()
                     )
                 }.sortedBy { it.name }
             appList.postValue(apps.toMutableList())

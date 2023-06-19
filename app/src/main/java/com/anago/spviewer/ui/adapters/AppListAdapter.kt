@@ -43,7 +43,7 @@ class AppListAdapter(private val context: Context) : ListAdapter<App, AppListAda
 
         holder.itemView.setOnClickListener {
             val intent = Intent(context, SPFileListActivity::class.java).apply {
-                putExtra("packageName", app.packageName)
+                putExtra("app", app)
             }
             context.startActivity(intent)
         }

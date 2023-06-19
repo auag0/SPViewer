@@ -6,21 +6,27 @@ import android.os.Bundle
 import android.widget.ArrayAdapter
 import android.widget.ListView
 import com.anago.spviewer.R
+import com.anago.spviewer.models.App
 import com.anago.spviewer.root.Commands.fileLists
 import com.anago.spviewer.ui.activities.base.RootAccessActivity
 import java.io.File
 
-
 class SPFileListActivity : RootAccessActivity() {
-    private val pkgName: String by lazy {
-        intent.getStringExtra("packageName")!!
+    private val app: App by lazy {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            intent.getParcelableExtra("app", App::class.java)!!
+        } else {
+            @Suppress("DEPRECATION")
+            intent.getParcelableExtra("app")!!
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sp_files)
+        title = app.name
 
-        val spDir = File(getDataDir(pkgName), "shared_prefs").absolutePath
+        val spDir = File(getDataDir(app.packageName), "shared_prefs").absolutePath
         val spFiles = fileLists(spDir)
         setupListView(spDir, spFiles)
     }
