@@ -6,8 +6,8 @@ import android.os.Bundle
 import android.widget.ArrayAdapter
 import android.widget.ListView
 import com.anago.spviewer.R
+import com.anago.spviewer.root.Commands.fileLists
 import com.anago.spviewer.ui.activities.base.RootAccessActivity
-import com.topjohnwu.superuser.Shell
 import java.io.File
 
 
@@ -21,10 +21,8 @@ class SPFileListActivity : RootAccessActivity() {
         setContentView(R.layout.activity_sp_files)
 
         val spDir = File(getDataDir(pkgName), "shared_prefs").absolutePath
-        Shell.cmd("ls $spDir").submit { result ->
-            val spFileList = result.out.filterNot { it.isNullOrBlank() }
-            setupListView(spDir, spFileList)
-        }
+        val spFiles = fileLists(spDir)
+        setupListView(spDir, spFiles)
     }
 
     private fun setupListView(spDir: String, spFiles: List<String>) {
