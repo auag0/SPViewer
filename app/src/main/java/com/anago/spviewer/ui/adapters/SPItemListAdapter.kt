@@ -25,12 +25,13 @@ class SPItemListAdapter(private val items: List<Pair<String, Any?>>) : RecyclerV
         val item = items[position]
         val key = item.first
         val value = item.second
-        var type = value?.javaClass?.simpleName
-        if (value is Set<*>) {
-            type = "Set"
+        // LinkedHashSetやSingletonSetをSetに統一
+        val type = when (value) {
+            is Set<*> -> "Set"
+            else -> value?.javaClass?.simpleName ?: "Unknown"
         }
 
-        holder.typeText.text = type.toString()
+        holder.typeText.text = type
         holder.keyText.text = key
         holder.valueText.text = value.toString()
     }

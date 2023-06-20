@@ -46,7 +46,7 @@ class SPFileListActivity : RootAccessActivity() {
     }
 
     private fun getDataDir(packageName: String): File {
-        return if (Build.VERSION.SDK_INT >= 29) {
+        return if (Build.VERSION.SDK_INT >= 30) {
             File("/data_mirror/data_ce/null/0/$packageName")
         } else {
             @Suppress("SdCardPath")

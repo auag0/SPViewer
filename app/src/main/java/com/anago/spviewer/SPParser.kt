@@ -14,7 +14,6 @@ class SPParser(private val SPFilePath: String, private val useRootMode: Boolean 
             File(SPFilePath).bufferedReader().use { it.readText() }
         }
     }
-
     fun getAll(): Map<String, Any?> {
         val text = readTextFromFile()
         val xmlPullParser: XmlPullParser = Xml.newPullParser()

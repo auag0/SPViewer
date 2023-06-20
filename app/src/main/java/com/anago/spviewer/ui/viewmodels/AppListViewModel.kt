@@ -15,6 +15,11 @@ import kotlinx.coroutines.launch
 class AppListViewModel(private val app: Application) : AndroidViewModel(app) {
     val appList: MutableLiveData<MutableList<App>> = MutableLiveData(mutableListOf())
 
+    /* インストール済みのアプリを取得して 以下の処理後に appListを更新
+        - システムアプリを除外
+        - ApplicationInfoからAppに変換
+        - 名前順に並び替え
+    */
     fun loadAppList() {
         viewModelScope.launch(Dispatchers.IO) {
             val pm = app.packageManager
