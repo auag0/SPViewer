@@ -9,6 +9,9 @@ import com.anago.spviewer.ui.activities.base.RootAccessActivity
 import com.anago.spviewer.ui.adapters.SPItemListAdapter
 
 class SPViewerActivity : RootAccessActivity() {
+    private val fileName: String by lazy {
+        intent.getStringExtra("fileName")!!
+    }
     private val filePath: String by lazy {
         intent.getStringExtra("filePath")!!
     }
@@ -16,6 +19,7 @@ class SPViewerActivity : RootAccessActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sp_viewer)
+        title = fileName
 
         val parser = SPParser(filePath, true)
 

@@ -35,10 +35,13 @@ class SPFileListActivity : RootAccessActivity() {
         val listView: ListView = findViewById(R.id.listView)
         listView.adapter = ArrayAdapter(this, R.layout.listitem_sp_file, spFiles)
         listView.setOnItemClickListener { _, _, position, _ ->
-            val clickedFile = File(spDir, spFiles[position]).absolutePath
+            val clickedFile = File(spDir, spFiles[position])
             startActivity(Intent(
                 this, SPViewerActivity::class.java
-            ).apply { putExtra("filePath", clickedFile) })
+            ).apply {
+                putExtra("fileName", clickedFile.name)
+                putExtra("filePath", clickedFile.absolutePath)
+            })
         }
     }
 
