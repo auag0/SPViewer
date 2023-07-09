@@ -1,7 +1,6 @@
 package com.anago.spviewer.ui.adapters
 
 import android.content.Context
-import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,10 +11,12 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.anago.spviewer.R
 import com.anago.spviewer.models.App
-import com.anago.spviewer.ui.activities.SPFileListActivity
 import com.bumptech.glide.Glide
 
-class AppListAdapter(private val context: Context) : ListAdapter<App, AppListAdapter.ViewHolder>(object : DiffUtil.ItemCallback<App>() {
+class AppListAdapter(
+    private val context: Context,
+    private val onClickedApp: (App) -> Unit
+) : ListAdapter<App, AppListAdapter.ViewHolder>(object : DiffUtil.ItemCallback<App>() {
     override fun areItemsTheSame(oldItem: App, newItem: App): Boolean {
         return oldItem.packageName == newItem.packageName
     }
@@ -42,10 +43,7 @@ class AppListAdapter(private val context: Context) : ListAdapter<App, AppListAda
         Glide.with(context).load(app.icon).into(holder.icon)
 
         holder.itemView.setOnClickListener {
-            val intent = Intent(context, SPFileListActivity::class.java).apply {
-                putExtra("app", app)
-            }
-            context.startActivity(intent)
+            onClickedApp(app)
         }
     }
 }

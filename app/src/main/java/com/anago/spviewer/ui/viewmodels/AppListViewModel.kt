@@ -13,14 +13,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class AppListViewModel(private val app: Application) : AndroidViewModel(app) {
-    val appList: MutableLiveData<MutableList<App>> = MutableLiveData(mutableListOf())
+    val appList: MutableLiveData<List<App>> = MutableLiveData()
 
     /* インストール済みのアプリを取得して 以下の処理後に appListを更新
         - システムアプリを除外
         - ApplicationInfoからAppに変換
         - 名前順に並び替え
     */
-    fun loadAppList() {
+    fun loadAppList(onLoaded: (() -> Unit)? = null) {
         viewModelScope.launch(Dispatchers.IO) {
             val pm = app.packageManager
             val apps = pm.getCInstalledApplications(0)
@@ -32,7 +32,8 @@ class AppListViewModel(private val app: Application) : AndroidViewModel(app) {
                         it.loadIcon(pm).toBitmap()
                     )
                 }.sortedBy { it.name }
-            appList.postValue(apps.toMutableList())
+            appList.postValue(apps)
+            onLoaded?.invoke()
         }
     }
 

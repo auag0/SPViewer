@@ -5,34 +5,33 @@
     android:layout_height="wrap_content"
     android:minWidth="60dp">
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/typeText"
         android:layout_width="75dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="5dp"
         android:text="Boolean"
-        android:textColor="@color/black"
         android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/keyText"
+        android:textColor="?colorOnSurface"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="5dp"
-        android:text="userName"
         app:layout_constraintStart_toEndOf="@+id/typeText"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/valueText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="5dp"
-        android:text="anago099999"
+        android:textColor="?colorOnSurfaceVariant"
         android:textSize="20sp"
         app:layout_constraintStart_toEndOf="@+id/typeText"
         app:layout_constraintTop_toBottomOf="@+id/keyText" />
@@ -42,7 +41,6 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_marginTop="1dp"
-        android:background="@color/black"
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

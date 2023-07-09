@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">SPViewer</string>
+    <string name="type">Type</string>
 </resources>

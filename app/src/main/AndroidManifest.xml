@@ -22,7 +22,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".ui.activities.SPFileListActivity" />
-        <activity android:name=".ui.activities.SPViewerActivity" />
+        <activity android:name=".ui.activities.SPEditorActivity" />
     </application>
 
 </manifest>
