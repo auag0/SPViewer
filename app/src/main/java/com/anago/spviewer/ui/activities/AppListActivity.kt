@@ -23,7 +23,7 @@ import com.topjohnwu.superuser.io.SuFile
 import java.io.File
 
 class AppListActivity : AppCompatActivity() {
-    private val viewModel by viewModels<AppListViewModel>()
+    private val mViewModel by viewModels<AppListViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,17 +35,17 @@ class AppListActivity : AppCompatActivity() {
         val appListAdapter = createAppListAdapter()
         setupRecyclerView(appListAdapter)
 
-        viewModel.appList.observe(this) { appList ->
+        mViewModel.getAppList().observe(this) { appList ->
             appListAdapter.submitList(appList)
         }
 
-        viewModel.loadAppList {
+        mViewModel.loadAppList {
             loadingDialog.dismiss()
         }
 
         val swipeRefreshLayout: SwipeRefreshLayout = findViewById(R.id.swipeRefreshLayout)
         swipeRefreshLayout.setOnRefreshListener {
-            viewModel.loadAppList {
+            mViewModel.loadAppList {
                 swipeRefreshLayout.isRefreshing = false
             }
         }

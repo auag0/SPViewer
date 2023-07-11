@@ -14,7 +14,7 @@ import com.anago.spviewer.models.App
 import com.bumptech.glide.Glide
 
 class AppListAdapter(
-    private val context: Context,
+    private val mContext: Context,
     private val onClickedApp: (App) -> Unit
 ) : ListAdapter<App, AppListAdapter.ViewHolder>(object : DiffUtil.ItemCallback<App>() {
     override fun areItemsTheSame(oldItem: App, newItem: App): Boolean {
@@ -32,7 +32,7 @@ class AppListAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(context).inflate(R.layout.listitem_app, parent, false)
+        val view = LayoutInflater.from(mContext).inflate(R.layout.listitem_app, parent, false)
         return ViewHolder(view)
     }
 
@@ -40,7 +40,7 @@ class AppListAdapter(
         val app = getItem(position)
         holder.name.text = app.name
         holder.packageName.text = app.packageName
-        Glide.with(context).load(app.icon).into(holder.icon)
+        Glide.with(mContext).load(app.icon).into(holder.icon)
 
         holder.itemView.setOnClickListener {
             onClickedApp(app)

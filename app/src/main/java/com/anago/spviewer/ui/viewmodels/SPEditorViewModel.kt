@@ -1,5 +1,6 @@
 package com.anago.spviewer.ui.viewmodels
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -12,12 +13,15 @@ import java.io.File
 
 class SPEditorViewModel : ViewModel() {
     private var mIsModified: Boolean = false
-    var items: MutableLiveData<List<SPItem>> = MutableLiveData(emptyList())
+    private val mItems: MutableLiveData<List<SPItem>> = MutableLiveData(emptyList())
+    fun getItems(): LiveData<List<SPItem>> {
+        return mItems
+    }
 
     fun loadSharedPrefsFile(xmlFile: File) {
         viewModelScope.launch(Dispatchers.IO) {
             val xmlText = readTextFromFile(xmlFile.absolutePath)
-            items.postValue(SPParser.parseXmlText(xmlText).toMutableList())
+            mItems.postValue(SPParser.parseXmlText(xmlText).toMutableList())
         }
     }
 
@@ -26,34 +30,34 @@ class SPEditorViewModel : ViewModel() {
     }
 
     fun deleteItem(key: String) {
-        val currentItems = items.value!!.toMutableList()
+        val currentItems = mItems.value!!.toMutableList()
         val result = currentItems.removeIf { it.key == key }
         if (result) {
-            items.value = currentItems
+            mItems.value = currentItems
             mIsModified = true
         }
     }
 
     fun changeItem(oldItemKey: String, newItem: SPItem) {
-        val currentItems = items.value!!.toMutableList()
+        val currentItems = mItems.value!!.toMutableList()
         val index = currentItems.indexOfFirst { it.key == oldItemKey }
         if (index != -1) {
             currentItems[index] = newItem
-            items.value = currentItems
+            mItems.value = currentItems
             mIsModified = true
         }
     }
 
     fun addItem(newItem: SPItem) {
-        val currentItems = items.value!!.toMutableList()
+        val currentItems = mItems.value!!.toMutableList()
         currentItems.add(newItem)
-        items.value = currentItems
+        mItems.value = currentItems
         mIsModified = true
     }
 
     fun saveItemsToFile(saveTo: File, onCompleted: () -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
-            val xmlText = SPParser.createXmlText(items.value!!)
+            val xmlText = SPParser.createXmlText(mItems.value!!)
             SuFile(saveTo.absolutePath).newOutputStream().bufferedWriter().use { out ->
                 out.write(xmlText)
             }

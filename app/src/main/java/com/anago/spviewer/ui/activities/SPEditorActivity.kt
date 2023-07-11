@@ -19,7 +19,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import java.io.File
 
 class SPEditorActivity : AppCompatActivity() {
-    private val xmlFile: File by lazy {
+    private val mXmlFile: File by lazy {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             intent.getSerializableExtra("file", File::class.java) as File
         } else {
@@ -27,38 +27,44 @@ class SPEditorActivity : AppCompatActivity() {
         }
     }
 
-    private val viewModel: SPEditorViewModel by viewModels()
+    private val mViewModel: SPEditorViewModel by viewModels()
 
     @SuppressLint("NotifyDataSetChanged")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sp_viewer)
-        title = xmlFile.name
+        title = mXmlFile.name
 
         val fab: FloatingActionButton = findViewById(R.id.fab)
         fab.setOnClickListener {
             showAddOrEditItemDialog(createMode = true)
         }
+
         val spItemListAdapter = SPItemListAdapter(onClickItem = {
             showAddOrEditItemDialog(it, false)
         })
-        val recyclerView: RecyclerView = findViewById(R.id.recyclerView)
-        recyclerView.layoutManager = LinearLayoutManager(this)
-        recyclerView.adapter = spItemListAdapter
 
-        viewModel.items.observe(this) {
+        setupRecyclerView(spItemListAdapter)
+
+        mViewModel.getItems().observe(this) {
             spItemListAdapter.submitItems(it)
         }
 
-        viewModel.loadSharedPrefsFile(xmlFile)
+        mViewModel.loadSharedPrefsFile(mXmlFile)
 
         onBackPressedDispatcher.addCallback(this, true) {
-            if (viewModel.isModified()) {
+            if (mViewModel.isModified()) {
                 showCheckSaveDialog()
             } else {
                 finish()
             }
         }
+    }
+
+    private fun setupRecyclerView(adapter: SPItemListAdapter) {
+        val recyclerView: RecyclerView = findViewById(R.id.recyclerView)
+        recyclerView.layoutManager = LinearLayoutManager(this)
+        recyclerView.adapter = adapter
     }
 
     private fun showAddOrEditItemDialog(
@@ -70,15 +76,15 @@ class SPEditorActivity : AppCompatActivity() {
             createMode,
             object : SharedPrefsItemEditDialog.Callback {
                 override fun onDelete(key: String) {
-                    viewModel.deleteItem(key)
+                    mViewModel.deleteItem(key)
                 }
 
                 override fun onSave(oldItemKey: String, newItem: SPItem) {
-                    viewModel.changeItem(oldItemKey, newItem)
+                    mViewModel.changeItem(oldItemKey, newItem)
                 }
 
                 override fun onAddItem(newItem: SPItem) {
-                    viewModel.addItem(newItem)
+                    mViewModel.addItem(newItem)
                 }
 
                 override fun onSaveError(msg: String) {
@@ -98,7 +104,7 @@ class SPEditorActivity : AppCompatActivity() {
             .setPositiveButton(
                 "Save"
             ) { _, _ ->
-                viewModel.saveItemsToFile(xmlFile) {
+                mViewModel.saveItemsToFile(mXmlFile) {
                     finish()
                 }
             }.show()

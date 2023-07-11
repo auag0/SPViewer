@@ -15,8 +15,8 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 
 class SPItemStringListAdapter(
-    private val context: Context,
-    private val recyclerView: RecyclerView
+    private val mContext: Context,
+    private val mRecyclerView: RecyclerView
 ) :
     RecyclerView.Adapter<SPItemStringListAdapter.ViewHolder>() {
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -24,9 +24,9 @@ class SPItemStringListAdapter(
         val drag: ImageView = itemView.findViewById(R.id.drag)
     }
 
-    private val itemTouchHelper: ItemTouchHelper =
+    private val mItemTouchHelper: ItemTouchHelper =
         ItemTouchHelper(ItemTouchHelperCallback(this)).apply {
-            attachToRecyclerView(recyclerView)
+            attachToRecyclerView(mRecyclerView)
         }
 
     private var mStrings = emptyList<String>()
@@ -43,7 +43,7 @@ class SPItemStringListAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder =
         ViewHolder(
-            LayoutInflater.from(context).inflate(R.layout.listitem_string, parent, false)
+            LayoutInflater.from(mContext).inflate(R.layout.listitem_string, parent, false)
         )
 
     override fun getItemCount(): Int = mStrings.size
@@ -54,11 +54,11 @@ class SPItemStringListAdapter(
         holder.text.text = string
 
         holder.itemView.setOnClickListener {
-            val editText = LayoutInflater.from(context)
+            val editText = LayoutInflater.from(mContext)
                 .inflate(R.layout.dialog_add_string, null, false) as TextInputEditText
             editText.setText(string)
             editText.hint = string
-            MaterialAlertDialogBuilder(context).setTitle("Change String").setView(editText)
+            MaterialAlertDialogBuilder(mContext).setTitle("Change String").setView(editText)
                 .setPositiveButton("Change") { _, _ ->
                     val oldStrings = mStrings.toMutableList()
                     oldStrings[position] = editText.text.toString()
@@ -75,7 +75,7 @@ class SPItemStringListAdapter(
 
         holder.drag.setOnTouchListener { _, event ->
             if (event.action == MotionEvent.ACTION_DOWN) {
-                itemTouchHelper.startDrag(holder)
+                mItemTouchHelper.startDrag(holder)
             }
             false
         }
