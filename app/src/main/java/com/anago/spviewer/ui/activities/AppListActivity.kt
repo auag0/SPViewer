@@ -8,12 +8,12 @@ import android.view.LayoutInflater
 import android.widget.ArrayAdapter
 import android.widget.ListView
 import androidx.activity.viewModels
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.anago.spviewer.R
-import com.anago.spviewer.models.App
 import com.anago.spviewer.ui.adapters.AppListAdapter
 import com.anago.spviewer.ui.customviews.SearchBar
 import com.anago.spviewer.ui.viewmodels.AppListViewModel
@@ -29,34 +29,21 @@ class AppListActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_applist)
 
-        val loadingDialog = MaterialAlertDialogBuilder(this)
-            .setView(R.layout.dialog_loading)
-            .setCancelable(false)
-            .create()
-        loadingDialog.window?.decorView?.setBackgroundColor(Color.TRANSPARENT)
+        val loadingDialog = createLoadingDialog()
         loadingDialog.show()
 
-        val swipeRefreshLayout: SwipeRefreshLayout = findViewById(R.id.swipeRefreshLayout)
-        val recyclerView: RecyclerView = findViewById(R.id.recyclerView)
-
-        val appListAdapter = AppListAdapter(this, ::onClickedApp)
-        val linearLayoutManager = LinearLayoutManager(this)
-        recyclerView.layoutManager = linearLayoutManager
-        recyclerView.addItemDecoration(
-            MaterialDividerItemDecoration(
-                this,
-                linearLayoutManager.orientation
-            )
-        )
-        recyclerView.adapter = appListAdapter
+        val appListAdapter = createAppListAdapter()
+        setupRecyclerView(appListAdapter)
 
         viewModel.appList.observe(this) { appList ->
             appListAdapter.submitList(appList)
         }
+
         viewModel.loadAppList {
             loadingDialog.dismiss()
         }
 
+        val swipeRefreshLayout: SwipeRefreshLayout = findViewById(R.id.swipeRefreshLayout)
         swipeRefreshLayout.setOnRefreshListener {
             viewModel.loadAppList {
                 swipeRefreshLayout.isRefreshing = false
@@ -64,15 +51,21 @@ class AppListActivity : AppCompatActivity() {
         }
     }
 
-    private fun onClickedApp(app: App) {
-        val sharedPrefDir = File(getDataDir(app.packageName), "shared_prefs")
-        val sharedPrefs = getSharedPrefsList(sharedPrefDir)
-        showSelectSharedPrefs(sharedPrefDir, sharedPrefs)
+    private fun createLoadingDialog(): AlertDialog {
+        val loadingDialog = MaterialAlertDialogBuilder(this)
+            .setView(R.layout.dialog_loading)
+            .setCancelable(false)
+            .create()
+        loadingDialog.window?.decorView?.setBackgroundColor(Color.TRANSPARENT)
+        return loadingDialog
     }
 
-    private fun getSharedPrefsList(sharedPrefDir: File): List<String> {
-        return SuFile(sharedPrefDir.absolutePath).list()
-            ?.filter { it.endsWith(".xml") } ?: emptyList()
+    private fun createAppListAdapter(): AppListAdapter {
+        return AppListAdapter(this) { clickedApp ->
+            val sharedPrefsDir = File(getDataDir(clickedApp.packageName), "shared_prefs")
+            val sharedPrefs = getSharedPrefsList(sharedPrefsDir)
+            showSelectSharedPrefs(sharedPrefsDir, sharedPrefs)
+        }
     }
 
     private fun getDataDir(packageName: String): File {
@@ -82,6 +75,11 @@ class AppListActivity : AppCompatActivity() {
             @Suppress("SdCardPath")
             File("/data/data/$packageName")
         }
+    }
+
+    private fun getSharedPrefsList(sharedPrefDir: File): List<String> {
+        return SuFile(sharedPrefDir.absolutePath).list()
+            ?.filter { it.endsWith(".xml") } ?: emptyList()
     }
 
     private fun showSelectSharedPrefs(sharedPrefDir: File, sharedPrefs: List<String>) {
@@ -115,5 +113,18 @@ class AppListActivity : AppCompatActivity() {
         MaterialAlertDialogBuilder(this)
             .setView(dialogView)
             .show()
+    }
+
+    private fun setupRecyclerView(appListAdapter: AppListAdapter) {
+        val linearLayoutManager = LinearLayoutManager(this)
+        val recyclerView: RecyclerView = findViewById(R.id.recyclerView)
+        recyclerView.layoutManager = linearLayoutManager
+        recyclerView.addItemDecoration(
+            MaterialDividerItemDecoration(
+                this,
+                linearLayoutManager.orientation
+            )
+        )
+        recyclerView.adapter = appListAdapter
     }
 }

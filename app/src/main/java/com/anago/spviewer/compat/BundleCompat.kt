@@ -1,10 +1,10 @@
-package com.anago.spviewer
+package com.anago.spviewer.compat
 
 import android.os.Build
 import android.os.Bundle
 import java.io.Serializable
 
-object CompatFuncs {
+object BundleCompat {
     inline fun <reified T : Serializable> Bundle.getCSerializable(key: String): T? {
         return if (Build.VERSION.SDK_INT >= 33) {
             getSerializable(key, T::class.java)
