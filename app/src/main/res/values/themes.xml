@@ -1,9 +1,9 @@
 <resources>
-
-    <style name="Theme.SharedPreferencesViewer" parent="Theme.Material3.Light">
-        <item name="windowActionBar">false</item>
-        <item name="android:windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
-        <item name="android:windowNoTitle">true</item>
+    <!-- Base application theme. -->
+    <style name="Base.Theme.SPViewer" parent="Theme.Material3.Light.NoActionBar">
+        <!-- Customize your light theme here. -->
+        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
     </style>
+
+    <style name="Theme.SPViewer" parent="Base.Theme.SPViewer" />
 </resources>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:minHeight="40dp"
+    android:orientation="vertical">
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/key"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:includeFontPadding="false"
+        android:singleLine="true"
+        android:textColor="?attr/colorOnSurface"
+        android:textSize="18sp" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/value"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:includeFontPadding="false"
+        android:textColor="?attr/colorOnSurfaceVariant" />
+</LinearLayout>

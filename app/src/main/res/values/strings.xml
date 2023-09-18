@@ -1,4 +1,26 @@
 <resources>
     <string name="app_name">SPViewer</string>
-    <string name="type">Type</string>
+
+    <string name="app_list">AppList</string>
+    <string name="app_icon">app icon</string>
+
+    <string name="dialog_edit_value">Value</string>
+    <string name="dialog_edit_key">Key</string>
+    <string name="dialog_edit_type">Type</string>
+    <string name="dialog_edit_edit">Edit</string>
+    <string name="dialog_edit_create">Create</string>
+    <string name="dialog_edit_cancel">Cancel</string>
+
+    <string name="dialog_edit_exit_confirm_title">Confirm</string>
+    <string name="dialog_edit_exit_confirm_message">following files contain unsaved changes, do you want to save them?</string>
+    <string name="dialog_edit_exit_confirm_save">Save</string>
+    <string name="dialog_edit_exit_confirm_later">Later</string>
+    <string name="dialog_edit_exit_confirm_exit">Exit</string>
+
+    <string name="dialog_edit_delete_confirm_title">Confirm</string>
+    <string name="dialog_edit_delete_confirm_message">do you want to delete?</string>
+    <string name="dialog_edit_delete_confirm_delete">delete</string>
+    <string name="dialog_edit_delete_confirm_cancel">Cancel</string>
+
+    <string name="fab_create">Create Item</string>
 </resources>
