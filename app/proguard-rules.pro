@@ -20,7 +20,7 @@
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
 
--assumenosideeffects class com.anago.spviewer.Logger {
+-assumenosideeffects class com.anago.spviewer.utils.Logger {
     TAG;
     debug(...);
     error(...);

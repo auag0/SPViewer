@@ -1,11 +1,13 @@
-package com.anago.spviewer.applist.adapter
+package com.anago.spviewer.adapters
 
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import com.anago.spviewer.R
-import com.anago.spviewer.applist.AppItem
+import com.anago.spviewer.adapters.callbacks.AppItemDiffCallback
+import com.anago.spviewer.adapters.viewholders.AppViewHolder
+import com.anago.spviewer.models.AppItem
 import com.bumptech.glide.Glide
 
 class AppListAdapter(private val context: Context, private val onClick: (AppItem) -> Unit) :

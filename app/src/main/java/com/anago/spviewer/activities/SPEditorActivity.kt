@@ -1,4 +1,4 @@
-package com.anago.spviewer.prefs
+package com.anago.spviewer.activities
 
 import android.os.Bundle
 import androidx.activity.addCallback
@@ -7,9 +7,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.anago.spviewer.R
+import com.anago.spviewer.adapters.SPItemAdapter
 import com.anago.spviewer.compat.IntentCompat.getCSerializableExtra
-import com.anago.spviewer.prefs.adapter.SPItemAdapter
-import com.anago.spviewer.prefs.dialog.SPItemEditDialog
+import com.anago.spviewer.dialogs.SPItemEditDialog
+import com.anago.spviewer.models.SPItem
+import com.anago.spviewer.viewmodels.SPEditorViewModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.topjohnwu.superuser.io.SuFile

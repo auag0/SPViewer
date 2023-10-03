@@ -1,4 +1,4 @@
-package com.anago.spviewer.applist
+package com.anago.spviewer.models
 
 import android.content.pm.ApplicationInfo
 import android.graphics.drawable.Drawable

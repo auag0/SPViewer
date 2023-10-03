@@ -1,4 +1,4 @@
-package com.anago.spviewer.applist
+package com.anago.spviewer.viewmodels
 
 import android.app.Application
 import android.content.pm.ApplicationInfo.FLAG_SYSTEM
@@ -7,6 +7,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.anago.spviewer.compat.PackageManagerCompat.getCInstalledApplications
+import com.anago.spviewer.models.AppItem
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 

@@ -13,7 +13,7 @@
         android:theme="@style/Theme.SPViewer"
         tools:targetApi="31">
         <activity
-            android:name=".applist.AppListActivity"
+            android:name=".activities.AppListActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -21,7 +21,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".prefs.SPEditorActivity" />
+        <activity android:name=".activities.SPEditorActivity" />
     </application>
 
 </manifest>

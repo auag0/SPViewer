@@ -1,8 +1,9 @@
-package com.anago.spviewer.prefs
+package com.anago.spviewer.utils
 
 import android.util.Xml
 import android.util.Xml.Encoding
-import com.anago.spviewer.Logger.debug
+import com.anago.spviewer.models.SPItem
+import com.anago.spviewer.utils.Logger.debug
 import org.xmlpull.v1.XmlPullParser
 import java.io.StringReader
 import java.io.StringWriter

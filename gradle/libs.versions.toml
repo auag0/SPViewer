@@ -1,5 +1,5 @@
 [versions]
-agp = "8.3.0-alpha04"
+agp = "8.1.2"
 kotlin = "1.9.10"
 core-ktx = "1.12.0"
 appcompat = "1.6.1"
@@ -22,8 +22,6 @@ glide-ksp = { group = "com.github.bumptech.glide", name = "ksp", version.ref = "
 swiperefreshlayout = { group = "androidx.swiperefreshlayout", name = "swiperefreshlayout", version.ref = "swiperefreshlayout" }
 libsu-core = { group = "com.github.topjohnwu.libsu", name = "core", version.ref = "libsu" }
 libsu-io = { group = "com.github.topjohnwu.libsu", name = "io", version.ref = "libsu" }
-libsu-nio = { group = "com.github.topjohnwu.libsu", name = "nio", version.ref = "libsu" }
-libsu-service = { group = "com.github.topjohnwu.libsu", name = "service", version.ref = "libsu" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

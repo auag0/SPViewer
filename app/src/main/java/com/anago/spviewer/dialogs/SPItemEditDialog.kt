@@ -1,4 +1,4 @@
-package com.anago.spviewer.prefs.dialog
+package com.anago.spviewer.dialogs
 
 import android.app.AlertDialog
 import android.app.Dialog
@@ -10,9 +10,9 @@ import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.DialogFragment
-import com.anago.spviewer.Logger
 import com.anago.spviewer.R
-import com.anago.spviewer.prefs.SPItem
+import com.anago.spviewer.models.SPItem
+import com.anago.spviewer.utils.Logger
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.MaterialAutoCompleteTextView
 import com.google.android.material.textfield.TextInputEditText

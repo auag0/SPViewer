@@ -1,4 +1,4 @@
-package com.anago.spviewer.prefs.adapter
+package com.anago.spviewer.adapters.viewholders
 
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView

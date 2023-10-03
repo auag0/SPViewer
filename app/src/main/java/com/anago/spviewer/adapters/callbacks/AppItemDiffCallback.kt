@@ -1,8 +1,8 @@
-package com.anago.spviewer.applist.adapter
+package com.anago.spviewer.adapters.callbacks
 
 import androidx.core.util.ObjectsCompat
 import androidx.recyclerview.widget.DiffUtil
-import com.anago.spviewer.applist.AppItem
+import com.anago.spviewer.models.AppItem
 
 class AppItemDiffCallback : DiffUtil.ItemCallback<AppItem>() {
     override fun areItemsTheSame(oldItem: AppItem, newItem: AppItem): Boolean {

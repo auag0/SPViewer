@@ -34,9 +34,6 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
-    buildFeatures {
-        aidl = true
-    }
 }
 
 dependencies {
@@ -52,6 +49,4 @@ dependencies {
 
     implementation(libs.libsu.core)
     implementation(libs.libsu.io)
-    implementation(libs.libsu.nio)
-    implementation(libs.libsu.service)
 }

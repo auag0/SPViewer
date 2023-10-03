@@ -1,4 +1,4 @@
-package com.anago.spviewer.applist.adapter
+package com.anago.spviewer.adapters.viewholders
 
 import android.view.View
 import android.widget.ImageView

@@ -1,11 +1,13 @@
-package com.anago.spviewer.prefs.adapter
+package com.anago.spviewer.adapters
 
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import com.anago.spviewer.R
-import com.anago.spviewer.prefs.SPItem
+import com.anago.spviewer.adapters.callbacks.SPItemDiffCallback
+import com.anago.spviewer.adapters.viewholders.SPItemViewHolder
+import com.anago.spviewer.models.SPItem
 
 class SPItemAdapter(
     private val context: Context,
