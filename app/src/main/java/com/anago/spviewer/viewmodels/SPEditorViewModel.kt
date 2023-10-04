@@ -2,8 +2,10 @@ package com.anago.spviewer.viewmodels
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.anago.spviewer.activities.SPEditorActivity
 import com.anago.spviewer.models.SPItem
 import com.anago.spviewer.utils.SPParser
 import com.topjohnwu.superuser.io.SuFile
@@ -11,24 +13,31 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class SPEditorViewModel : ViewModel() {
-    private lateinit var prefFile: SuFile
+class SPEditorViewModel(
+    savedStateHandle: SavedStateHandle
+) : ViewModel() {
+    private val prefFile: MutableLiveData<SuFile?> = MutableLiveData(null)
     private var spItems: MutableLiveData<List<SPItem>> = MutableLiveData(emptyList())
     private var isModified: Boolean = false
+
+    init {
+        prefFile.value = savedStateHandle[SPEditorActivity.EXTRA_PREF_FILE_PATH]
+            ?: throw Exception("required ${SPEditorActivity.EXTRA_PREF_FILE_PATH}")
+        parsePrefFile()
+    }
+
+    fun getPrefFile(): LiveData<SuFile?> {
+        return prefFile
+    }
 
     fun getSPItems(): LiveData<List<SPItem>> {
         return spItems
     }
 
-    fun setPrefFile(file: SuFile) {
-        prefFile = file
-        parsePrefFile()
-    }
-
     private fun parsePrefFile() {
         spItems.value = emptyList()
         viewModelScope.launch(Dispatchers.IO) {
-            val prefText = prefFile.newInputStream().bufferedReader().use { it.readText() }
+            val prefText = prefFile.value!!.newInputStream().bufferedReader().use { it.readText() }
             spItems.postValue(withContext(Dispatchers.Default) {
                 SPParser.parseXmlText(prefText)
             })
@@ -41,7 +50,7 @@ class SPEditorViewModel : ViewModel() {
             val newSPItems = spItems.value ?: emptyList()
             val xmlText = SPParser.createXmlText(newSPItems)
             withContext(Dispatchers.IO) {
-                prefFile.newOutputStream().bufferedWriter().use {
+                prefFile.value!!.newOutputStream().bufferedWriter().use {
                     it.write(xmlText)
                 }
                 complete()

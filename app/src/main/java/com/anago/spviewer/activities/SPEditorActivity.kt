@@ -8,13 +8,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.anago.spviewer.R
 import com.anago.spviewer.adapters.SPItemAdapter
-import com.anago.spviewer.compat.IntentCompat.getCSerializableExtra
 import com.anago.spviewer.dialogs.SPItemEditDialog
 import com.anago.spviewer.models.SPItem
 import com.anago.spviewer.viewmodels.SPEditorViewModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.topjohnwu.superuser.io.SuFile
 
 class SPEditorActivity : AppCompatActivity() {
     private val viewModel: SPEditorViewModel by viewModels()
@@ -23,55 +21,50 @@ class SPEditorActivity : AppCompatActivity() {
         setContentView(R.layout.activity_speditor)
         setSupportActionBar(findViewById(R.id.toolbar))
 
-        val prefFile: SuFile = intent.getCSerializableExtra(EXTRA_PREF_FILE_PATH)
-        viewModel.setPrefFile(prefFile)
-
-        supportActionBar?.title = prefFile.name
-
-        val spItemAdapter = SPItemAdapter(this, ::onClicked, ::onLongClicked)
+        val spItemAdapter = SPItemAdapter(
+            this,
+            onClicked = ::showSPItemEditDialog,
+            onLongClicked = ::showSPItemDeleteConfirmDialog
+        )
         val recyclerView: RecyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = spItemAdapter
 
         val fab: FloatingActionButton = findViewById(R.id.fab)
         fab.setOnClickListener {
-            SPItemEditDialog(true, null, onCreated = { spItem ->
-                return@SPItemEditDialog viewModel.createSPItem(spItem)
-            }).show(supportFragmentManager, null)
+            showSPItemCreateDialog()
+        }
+
+        onBackPressedDispatcher.addCallback(this) {
+            if (viewModel.isModified()) {
+                showSaveConfirmDialog()
+            } else {
+                finish()
+            }
+        }
+
+        viewModel.getPrefFile().observe(this) { prefFile ->
+            supportActionBar?.title = prefFile?.name
         }
 
         viewModel.getSPItems().observe(this) {
             spItemAdapter.submitList(it)
         }
-
-        onBackPressedDispatcher.addCallback(this) {
-            if (viewModel.isModified()) {
-                MaterialAlertDialogBuilder(this@SPEditorActivity).apply {
-                    setTitle(R.string.dialog_edit_exit_confirm_title)
-                    setMessage(R.string.dialog_edit_exit_confirm_message)
-                    setPositiveButton(R.string.dialog_edit_exit_confirm_save) { _, _ ->
-                        viewModel.savePrefFile {
-                            finish()
-                        }
-                    }
-                    setNegativeButton(R.string.dialog_edit_exit_confirm_later, null)
-                    setNeutralButton(R.string.dialog_edit_exit_confirm_exit) { _, _ ->
-                        finish()
-                    }
-                }.show()
-            } else {
-                finish()
-            }
-        }
     }
 
-    private fun onClicked(spItem: SPItem) {
+    private fun showSPItemCreateDialog() {
+        SPItemEditDialog(true, null, onCreated = { spItem ->
+            return@SPItemEditDialog viewModel.createSPItem(spItem)
+        }).show(supportFragmentManager, null)
+    }
+
+    private fun showSPItemEditDialog(spItem: SPItem) {
         SPItemEditDialog(false, spItem, onEdited = { oldItem, newItem ->
             return@SPItemEditDialog viewModel.editSPItem(oldItem.key, newItem)
         }).show(supportFragmentManager, null)
     }
 
-    private fun onLongClicked(spItem: SPItem) {
+    private fun showSPItemDeleteConfirmDialog(spItem: SPItem) {
         MaterialAlertDialogBuilder(this).apply {
             setTitle(R.string.dialog_edit_delete_confirm_title)
             setMessage(R.string.dialog_edit_delete_confirm_message)
@@ -79,6 +72,22 @@ class SPEditorActivity : AppCompatActivity() {
                 viewModel.deleteSPItem(spItem)
             }
             setNegativeButton(R.string.dialog_edit_delete_confirm_cancel, null)
+        }.show()
+    }
+
+    private fun showSaveConfirmDialog() {
+        MaterialAlertDialogBuilder(this@SPEditorActivity).apply {
+            setTitle(R.string.dialog_edit_exit_confirm_title)
+            setMessage(R.string.dialog_edit_exit_confirm_message)
+            setPositiveButton(R.string.dialog_edit_exit_confirm_save) { _, _ ->
+                viewModel.savePrefFile {
+                    finish()
+                }
+            }
+            setNegativeButton(R.string.dialog_edit_exit_confirm_later, null)
+            setNeutralButton(R.string.dialog_edit_exit_confirm_exit) { _, _ ->
+                finish()
+            }
         }.show()
     }
 
