@@ -13,22 +13,23 @@ import kotlinx.coroutines.launch
 
 class AppListViewModel(private val app: Application) : AndroidViewModel(app) {
     private var appList: List<AppItem> = emptyList()
-    private var displayedAppList: MutableLiveData<List<AppItem>> = MutableLiveData(emptyList())
+    private var _displayedAppList: MutableLiveData<List<AppItem>> = MutableLiveData(emptyList())
+    val displayedAppList: LiveData<List<AppItem>> = _displayedAppList
 
-    fun getDisplayedAppList(): LiveData<List<AppItem>> {
-        return displayedAppList
+    init {
+        fetchInstalledAppList()
     }
 
     fun fetchInstalledAppList() {
         viewModelScope.launch(Dispatchers.Default) {
             val pm = app.packageManager
             val installedApps = pm.getCInstalledApplications(0).map { appInfo ->
+                val isSystem = appInfo.flags and FLAG_SYSTEM == FLAG_SYSTEM
                 AppItem(
                     name = appInfo.loadLabel(pm).toString(),
                     packageName = appInfo.packageName,
                     icon = appInfo.loadIcon(pm),
-                    isSystem = appInfo.flags and FLAG_SYSTEM == FLAG_SYSTEM,
-                    appInfo = appInfo
+                    isSystem = isSystem
                 )
             }
             appList = installedApps
@@ -37,18 +38,7 @@ class AppListViewModel(private val app: Application) : AndroidViewModel(app) {
     }
 
     private fun updateDisplayedAppList() {
-        var displayedApps = appList
-
-        // システムアプリを除外する
-        displayedApps = displayedApps.filterNot { it.isSystem }
-
-        // 名前順に並び替える
-        displayedApps = displayedApps.sortedBy { it.name }
-
-        displayedAppList.postValue(displayedApps)
-    }
-
-    init {
-        fetchInstalledAppList()
+        val displayedApps = appList.filterNot { it.isSystem }.sortedBy { it.name }
+        _displayedAppList.postValue(displayedApps)
     }
 }

@@ -32,7 +32,7 @@ class AppListActivity : AppCompatActivity() {
             viewModel.fetchInstalledAppList()
         }
 
-        viewModel.getDisplayedAppList().observe(this) {
+        viewModel.displayedAppList.observe(this) {
             if (it.isEmpty()) {
                 refreshLayout.isRefreshing = true
             }
