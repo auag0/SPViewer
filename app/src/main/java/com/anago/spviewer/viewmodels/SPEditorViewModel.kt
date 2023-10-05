@@ -16,41 +16,38 @@ import kotlinx.coroutines.withContext
 class SPEditorViewModel(
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
-    private val prefFile: MutableLiveData<SuFile?> = MutableLiveData(null)
-    private var spItems: MutableLiveData<List<SPItem>> = MutableLiveData(emptyList())
+    private val _prefFile: MutableLiveData<SuFile> = MutableLiveData(
+        savedStateHandle[SPEditorActivity.EXTRA_PREF_FILE_PATH]
+            ?: throw Exception("required ${SPEditorActivity.EXTRA_PREF_FILE_PATH}")
+    )
+    val prefFile: LiveData<SuFile> = _prefFile
+
+    private var _spItems: MutableLiveData<List<SPItem>> = MutableLiveData(emptyList())
+    val spItems: LiveData<List<SPItem>> = _spItems
     private var isModified: Boolean = false
 
     init {
-        prefFile.value = savedStateHandle[SPEditorActivity.EXTRA_PREF_FILE_PATH]
-            ?: throw Exception("required ${SPEditorActivity.EXTRA_PREF_FILE_PATH}")
         parsePrefFile()
     }
 
-    fun getPrefFile(): LiveData<SuFile?> {
-        return prefFile
-    }
-
-    fun getSPItems(): LiveData<List<SPItem>> {
-        return spItems
-    }
-
     private fun parsePrefFile() {
-        spItems.value = emptyList()
+        _spItems.value = emptyList()
         viewModelScope.launch(Dispatchers.IO) {
-            val prefText = prefFile.value!!.newInputStream().bufferedReader().use { it.readText() }
-            spItems.postValue(withContext(Dispatchers.Default) {
+            val prefText = _prefFile.value!!.newInputStream().bufferedReader().use { it.readText() }
+            val parsedSPItems = withContext(Dispatchers.Default) {
                 SPParser.parseXmlText(prefText)
-            })
+            }
+            _spItems.postValue(parsedSPItems)
             isModified = false
         }
     }
 
     fun savePrefFile(complete: () -> Unit) {
         viewModelScope.launch(Dispatchers.Default) {
-            val newSPItems = spItems.value ?: emptyList()
+            val newSPItems = _spItems.value ?: emptyList()
             val xmlText = SPParser.createXmlText(newSPItems)
             withContext(Dispatchers.IO) {
-                prefFile.value!!.newOutputStream().bufferedWriter().use {
+                _prefFile.value!!.newOutputStream().bufferedWriter().use {
                     it.write(xmlText)
                 }
                 complete()
@@ -63,41 +60,35 @@ class SPEditorViewModel(
     }
 
     private fun containsKey(key: String): Boolean {
-        val currentSPItems = spItems.value!!.toMutableList()
-        return currentSPItems.indexOfFirst { it.key == key } != -1
+        return _spItems.value?.any { it.key == key } ?: false
     }
 
     fun editSPItem(oldKey: String, newSPItem: SPItem): String? {
         if (containsKey(newSPItem.key) && oldKey != newSPItem.key) {
             return "key already exists"
         }
-        val currentSPItems = spItems.value!!.toMutableList()
-        val index = currentSPItems.indexOfFirst { it.key == oldKey }
-        if (index != -1) {
-            currentSPItems[index] = newSPItem
-            spItems.value = currentSPItems
-            isModified = true
-            return null
+        _spItems.value = _spItems.value?.map {
+            if (it.key == oldKey) {
+                newSPItem
+            } else {
+                it
+            }
         }
-        return "not found old item"
+        isModified = true
+        return null
     }
 
-    fun createSPItem(spItem: SPItem): String? {
-        if (containsKey(spItem.key)) {
+    fun createSPItem(newSPItem: SPItem): String? {
+        if (containsKey(newSPItem.key)) {
             return "key already exists"
         }
-        val currentSPItems = spItems.value!!.toMutableList()
-        currentSPItems.add(spItem)
-        spItems.value = currentSPItems
+        _spItems.value = _spItems.value?.plus(newSPItem)
         isModified = true
         return null
     }
 
     fun deleteSPItem(spItem: SPItem) {
-        val currentSPItems = spItems.value!!.toMutableList()
-        if (currentSPItems.remove(spItem)) {
-            spItems.value = currentSPItems
-            isModified = true
-        }
+        _spItems.value = _spItems.value?.filterNot { it.key == spItem.key }
+        isModified = true
     }
 }

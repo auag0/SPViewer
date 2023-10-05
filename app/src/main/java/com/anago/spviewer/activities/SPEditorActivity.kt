@@ -44,11 +44,11 @@ class SPEditorActivity : AppCompatActivity(), SPItemEditDialog.Listener {
             }
         }
 
-        viewModel.getPrefFile().observe(this) { prefFile ->
+        viewModel.prefFile.observe(this) { prefFile ->
             supportActionBar?.title = prefFile?.name
         }
 
-        viewModel.getSPItems().observe(this) {
+        viewModel.spItems.observe(this) {
             spItemAdapter.submitList(it)
         }
     }
