@@ -1,72 +1,73 @@
 package com.anago.spviewer.dialogs
 
-import android.app.AlertDialog
 import android.app.Dialog
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
-import android.widget.Toast
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.DialogFragment
 import com.anago.spviewer.R
+import com.anago.spviewer.compat.BundleCompat.getCSerializable
 import com.anago.spviewer.models.SPItem
 import com.anago.spviewer.utils.Logger
+import com.anago.spviewer.utils.NumberUtils.toBooleanEasy
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.MaterialAutoCompleteTextView
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 
-class SPItemEditDialog(
-    private val isCreateMode: Boolean,
-    private val oldSPItem: SPItem?,
-    private val onEdited: ((SPItem, SPItem) -> String?)? = null,
-    private val onCreated: ((SPItem) -> String?)? = null
-) : DialogFragment() {
+class SPItemEditDialog : DialogFragment() {
+    private var oldSPItem: SPItem? = null
+    private var isCreateMode: Boolean = false
+    private lateinit var listener: Listener
     private lateinit var dialogView: View
+    private lateinit var keyInputLayout: TextInputLayout
+    private lateinit var keyEditText: TextInputEditText
+    private lateinit var valueInputLayout: TextInputLayout
+    private lateinit var valueEditText: TextInputEditText
+    private lateinit var typeInputLayout: TextInputLayout
+    private lateinit var typeAutoComplete: MaterialAutoCompleteTextView
+
+    private val types = arrayOf("Boolean", "Float", "Int", "Long", "String")
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+
+        listener = context as Listener
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        oldSPItem = arguments?.getCSerializable(ARGS_OLD_SPITEM)
+        isCreateMode = arguments?.getBoolean(ARGS_IS_CREATE_MODE, false)!!
+    }
+
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         dialogView = layoutInflater.inflate(R.layout.dialog_edit_spitem, null, false)
 
-        val dialog = MaterialAlertDialogBuilder(requireContext()).apply {
-            setView(dialogView)
-            setNegativeButton(R.string.dialog_edit_cancel) { _, _ ->
+        val textResId = if (isCreateMode) R.string.dialog_edit_create else R.string.dialog_edit_edit
+        val dialog = MaterialAlertDialogBuilder(requireContext())
+            .setView(dialogView)
+            .setTitle(textResId)
+            .setPositiveButton(textResId) { _, _ ->
+                val newSPItem = createSPItem() ?: return@setPositiveButton
+                if (isCreateMode) {
+                    listener.onSPItemCreated(newSPItem)
+                } else {
+                    if (oldSPItem == null) {
+                        return@setPositiveButton
+                    }
+                    listener.onSPItemEdited(oldSPItem!!, newSPItem)
+                }
+            }
+            .setNegativeButton(R.string.dialog_edit_cancel) { _, _ ->
                 dismiss()
             }
-            if (isCreateMode) {
-                setTitle(R.string.dialog_edit_create)
-                setPositiveButton(R.string.dialog_edit_create, null)
-            } else {
-                setTitle(R.string.dialog_edit_edit)
-                setPositiveButton(R.string.dialog_edit_edit, null)
-            }
-        }.create()
-
-        dialog.setOnShowListener {
-            val positiveBtn = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
-            positiveBtn.setOnClickListener {
-                val newSPItem = createSPItem()
-                var result: String? = null
-                if (isCreateMode) {
-                    if (newSPItem != null) {
-                        result = onCreated?.invoke(newSPItem)
-                    } else {
-                        Toast.makeText(requireContext(), "Create failed", Toast.LENGTH_SHORT).show()
-                    }
-                } else {
-                    if (newSPItem != null && oldSPItem != null) {
-                        result = onEdited?.invoke(oldSPItem, newSPItem)
-                    } else {
-                        Toast.makeText(requireContext(), "Edit failed", Toast.LENGTH_SHORT).show()
-                    }
-                }
-                if (result.isNullOrBlank()) {
-                    dismiss()
-                } else {
-                    Toast.makeText(requireContext(), result, Toast.LENGTH_SHORT).show()
-                }
-            }
-        }
+            .create()
 
         return dialog
     }
@@ -76,20 +77,6 @@ class SPItemEditDialog(
     ): View {
         return dialogView
     }
-
-    private lateinit var keyInputLayout: TextInputLayout
-    private lateinit var keyEditText: TextInputEditText
-
-    private lateinit var valueInputLayout: TextInputLayout
-    private lateinit var valueEditText: TextInputEditText
-
-    private lateinit var typeInputLayout: TextInputLayout
-    private lateinit var typeAutoComplete: MaterialAutoCompleteTextView
-
-    private val types = arrayOf(
-        "Boolean", "Float", "Int", "Long", "String"
-    )
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -115,10 +102,10 @@ class SPItemEditDialog(
                 types[0], false
             )
         } else {
-            keyEditText.setText(oldSPItem.key)
-            valueEditText.setText(oldSPItem.value.toString())
+            keyEditText.setText(oldSPItem!!.key)
+            valueEditText.setText(oldSPItem!!.value.toString())
             typeAutoComplete.setText(
-                when (oldSPItem.value) {
+                when (oldSPItem!!.value) {
                     is Boolean -> types[0]
                     is Float -> types[1]
                     is Int -> types[2]
@@ -139,7 +126,10 @@ class SPItemEditDialog(
     }
 
     private fun checkValueWithTypeAndDisplay() {
-        if (checkValueWithType()) {
+        val value = valueEditText.text.toString()
+        val selectedType = typeAutoComplete.text.toString()
+
+        if (isValidValueWithType(value, selectedType)) {
             valueInputLayout.error = null
             valueInputLayout.isErrorEnabled = false
         } else {
@@ -148,15 +138,13 @@ class SPItemEditDialog(
         }
     }
 
-    private fun checkValueWithType(): Boolean {
-        val selectedType = types.indexOf(typeAutoComplete.text.toString())
-        val curValue = valueEditText.text.toString()
+    private fun isValidValueWithType(value: String, selectedType: String?): Boolean {
         try {
             when (selectedType) {
-                0 -> curValue.toBooleanEasy()
-                1 -> curValue.toFloat()
-                2 -> curValue.toInt()
-                3 -> curValue.toLong()
+                "Boolean" -> value.toBooleanEasy()
+                "Float" -> value.toFloat()
+                "Int" -> value.toInt()
+                "Long" -> value.toLong()
             }
         } catch (e: NumberFormatException) {
             Logger.error(e.message)
@@ -169,32 +157,45 @@ class SPItemEditDialog(
     }
 
     private fun createSPItem(): SPItem? {
-        if (checkValueWithType()) {
-            val key = keyEditText.text
-            if (key.isNullOrBlank()) {
-                return null
-            }
-            val value = valueEditText.text.toString()
-            val type = types.indexOf(typeAutoComplete.text.toString())
-            return SPItem(
-                key = key.toString(), value = when (type) {
-                    0 -> value.toBooleanEasy()
-                    1 -> value.toFloat()
-                    2 -> value.toInt()
-                    3 -> value.toLong()
-                    else -> value
-                }
-            )
-        } else {
+        val key = keyEditText.text.toString()
+        val value = valueEditText.text.toString()
+        val selectedType = typeAutoComplete.text.toString()
+
+        if (!isValidValueWithType(value, selectedType)) {
             return null
         }
+        if (key.isBlank()) {
+            return null
+        }
+
+        return SPItem(
+            key = key,
+            value = when (selectedType) {
+                "Boolean" -> value.toBooleanEasy()
+                "Float" -> value.toFloat()
+                "Int" -> value.toInt()
+                "Long" -> value.toLong()
+                else -> value
+            }
+        )
     }
 
-    private fun Any.toBooleanEasy(): Boolean {
-        return when (this.toString().lowercase()) {
-            "true", "1" -> true
-            "false", "0" -> false
-            else -> throw IllegalArgumentException()
+    interface Listener {
+        fun onSPItemEdited(oldSPItem: SPItem, newSPItem: SPItem)
+        fun onSPItemCreated(newSPItem: SPItem)
+    }
+
+    companion object {
+        private const val ARGS_OLD_SPITEM = "old_spitem"
+        private const val ARGS_IS_CREATE_MODE = "is_create_mode"
+
+        fun newInstance(isCreateMode: Boolean, oldSPItem: SPItem? = null): SPItemEditDialog {
+            return SPItemEditDialog().apply {
+                arguments = Bundle().apply {
+                    putBoolean(ARGS_IS_CREATE_MODE, isCreateMode)
+                    putSerializable(ARGS_OLD_SPITEM, oldSPItem)
+                }
+            }
         }
     }
 }

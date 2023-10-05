@@ -1,6 +1,7 @@
 package com.anago.spviewer.activities
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -14,7 +15,7 @@ import com.anago.spviewer.viewmodels.SPEditorViewModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
-class SPEditorActivity : AppCompatActivity() {
+class SPEditorActivity : AppCompatActivity(), SPItemEditDialog.Listener {
     private val viewModel: SPEditorViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,15 +54,15 @@ class SPEditorActivity : AppCompatActivity() {
     }
 
     private fun showSPItemCreateDialog() {
-        SPItemEditDialog(true, null, onCreated = { spItem ->
-            return@SPItemEditDialog viewModel.createSPItem(spItem)
-        }).show(supportFragmentManager, null)
+        SPItemEditDialog.newInstance(true, null).also {
+            it.show(supportFragmentManager, null)
+        }
     }
 
     private fun showSPItemEditDialog(spItem: SPItem) {
-        SPItemEditDialog(false, spItem, onEdited = { oldItem, newItem ->
-            return@SPItemEditDialog viewModel.editSPItem(oldItem.key, newItem)
-        }).show(supportFragmentManager, null)
+        SPItemEditDialog.newInstance(false, spItem).also {
+            it.show(supportFragmentManager, null)
+        }
     }
 
     private fun showSPItemDeleteConfirmDialog(spItem: SPItem) {
@@ -89,6 +90,18 @@ class SPEditorActivity : AppCompatActivity() {
                 finish()
             }
         }.show()
+    }
+
+    override fun onSPItemEdited(oldSPItem: SPItem, newSPItem: SPItem) {
+        viewModel.editSPItem(oldSPItem.key, newSPItem)?.let { error ->
+            Toast.makeText(this, error, Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    override fun onSPItemCreated(newSPItem: SPItem) {
+        viewModel.createSPItem(newSPItem)?.let { error ->
+            Toast.makeText(this, error, Toast.LENGTH_SHORT).show()
+        }
     }
 
     companion object {
