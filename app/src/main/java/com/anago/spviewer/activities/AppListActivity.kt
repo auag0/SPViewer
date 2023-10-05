@@ -2,6 +2,8 @@ package com.anago.spviewer.activities
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.Menu
+import android.widget.SearchView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -28,21 +30,35 @@ class AppListActivity : AppCompatActivity() {
 
         val refreshLayout: SwipeRefreshLayout = findViewById(R.id.refreshLayout)
         refreshLayout.setOnRefreshListener {
-            refreshLayout.isRefreshing = true
             viewModel.fetchInstalledAppList()
         }
 
+        viewModel.isRefreshing.observe(this) {
+            refreshLayout.isRefreshing = it
+        }
+
         viewModel.displayedAppList.observe(this) {
-            if (it.isEmpty()) {
-                refreshLayout.isRefreshing = true
-            }
             appListAdapter.submitList(it) {
                 appList.scrollToPosition(0)
-                if (it.isNotEmpty()) {
-                    refreshLayout.isRefreshing = false
-                }
             }
         }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.applist, menu)
+
+        val searchView = menu.findItem(R.id.searchView).actionView as SearchView
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String): Boolean {
+                return true
+            }
+
+            override fun onQueryTextChange(newText: String): Boolean {
+                viewModel.searchQuery = newText
+                return true
+            }
+        })
+        return true
     }
 
     private fun showClickedActionDialog(appItem: AppItem) {

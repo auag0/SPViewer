@@ -15,6 +15,13 @@ class AppListViewModel(private val app: Application) : AndroidViewModel(app) {
     private var appList: List<AppItem> = emptyList()
     private var _displayedAppList: MutableLiveData<List<AppItem>> = MutableLiveData(emptyList())
     val displayedAppList: LiveData<List<AppItem>> = _displayedAppList
+    private var _isRefreshing: MutableLiveData<Boolean> = MutableLiveData(false)
+    val isRefreshing: LiveData<Boolean> = _isRefreshing
+    var searchQuery: String? = null
+        set(value) {
+            field = value
+            updateDisplayedAppList()
+        }
 
     init {
         fetchInstalledAppList()
@@ -22,6 +29,7 @@ class AppListViewModel(private val app: Application) : AndroidViewModel(app) {
 
     fun fetchInstalledAppList() {
         viewModelScope.launch(Dispatchers.Default) {
+            _isRefreshing.postValue(true)
             val pm = app.packageManager
             val installedApps = pm.getCInstalledApplications(0).map { appInfo ->
                 val isSystem = appInfo.flags and FLAG_SYSTEM == FLAG_SYSTEM
@@ -38,7 +46,18 @@ class AppListViewModel(private val app: Application) : AndroidViewModel(app) {
     }
 
     private fun updateDisplayedAppList() {
-        val displayedApps = appList.filterNot { it.isSystem }.sortedBy { it.name }
-        _displayedAppList.postValue(displayedApps)
+        viewModelScope.launch(Dispatchers.Default) {
+            val displayedApps = appList.filterNot { it.isSystem }.let { apps ->
+                if (searchQuery.isNullOrBlank()) {
+                    apps.sortedBy { it.name }
+                } else {
+                    apps.filter { it.name.contains(searchQuery!!, true) }.sortedBy {
+                        it.name.indexOf(searchQuery!!, ignoreCase = true)
+                    }
+                }
+            }
+            _displayedAppList.postValue(displayedApps)
+            _isRefreshing.postValue(false)
+        }
     }
 }

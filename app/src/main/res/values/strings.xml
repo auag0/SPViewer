@@ -23,4 +23,5 @@
     <string name="dialog_edit_delete_confirm_cancel">Cancel</string>
 
     <string name="fab_create">Create Item</string>
+    <string name="app_list_menu_search">Search</string>
 </resources>
