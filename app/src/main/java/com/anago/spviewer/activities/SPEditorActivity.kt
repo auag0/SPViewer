@@ -30,6 +30,7 @@ class SPEditorActivity : AppCompatActivity(), SPItemEditDialog.Listener {
         val recyclerView: RecyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = spItemAdapter
+        recyclerView.itemAnimator = null
 
         val fab: FloatingActionButton = findViewById(R.id.fab)
         fab.setOnClickListener {
