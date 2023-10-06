@@ -23,5 +23,12 @@
     <string name="dialog_edit_delete_confirm_cancel">Cancel</string>
 
     <string name="fab_create">Create Item</string>
+
     <string name="app_list_menu_search">Search</string>
+    <string name="app_list_menu_sort">Sort</string>
+
+    <string name="app_list_sort_menu_name">Name</string>
+    <string name="app_list_sort_menu_package_name">PackageName</string>
+    <string name="app_list_sort_menu_install_time">Install Time</string>
+    <string name="app_list_sort_menu_update_time">Update Time</string>
 </resources>

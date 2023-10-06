@@ -6,6 +6,12 @@
         android:id="@+id/searchView"
         android:icon="@drawable/ic_search"
         android:title="@string/app_list_menu_search"
-        app:actionViewClass="android.widget.SearchView"
+        app:actionViewClass="androidx.appcompat.widget.SearchView"
+        app:showAsAction="ifRoom|collapseActionView" />
+
+    <item
+        android:id="@+id/sortBtn"
+        android:icon="@drawable/ic_sort"
+        android:title="@string/app_list_menu_sort"
         app:showAsAction="ifRoom" />
 </menu>

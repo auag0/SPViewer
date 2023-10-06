@@ -13,8 +13,8 @@ android {
         applicationId = "com.anago.spviewer"
         minSdk = 23
         targetSdk = 34
-        versionCode = 10_00_01
-        versionName = "1.0.1"
+        versionCode = 10_10_00
+        versionName = "1.1.0"
     }
 
     buildTypes {
@@ -45,6 +45,7 @@ dependencies {
 
     implementation(libs.glide)
     implementation(libs.swiperefreshlayout)
+    implementation(libs.preference)
     ksp(libs.glide.ksp)
 
     implementation(libs.libsu.core)

@@ -10,6 +10,7 @@ ksp = "1.9.10-1.0.13"
 activity-ktx = "1.7.2"
 swiperefreshlayout = "1.2.0-alpha01"
 libsu = "5.2.1"
+preference = "1.2.1"
 
 [libraries]
 core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "core-ktx" }
@@ -22,6 +23,7 @@ glide-ksp = { group = "com.github.bumptech.glide", name = "ksp", version.ref = "
 swiperefreshlayout = { group = "androidx.swiperefreshlayout", name = "swiperefreshlayout", version.ref = "swiperefreshlayout" }
 libsu-core = { group = "com.github.topjohnwu.libsu", name = "core", version.ref = "libsu" }
 libsu-io = { group = "com.github.topjohnwu.libsu", name = "io", version.ref = "libsu" }
+preference = { group = "androidx.preference", name = "preference", version.ref = "preference" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
