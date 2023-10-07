@@ -42,11 +42,15 @@ dependencies {
     implementation(libs.material)
     implementation(libs.constraintlayout)
     implementation(libs.activity.ktx)
-
-    implementation(libs.glide)
     implementation(libs.swiperefreshlayout)
     implementation(libs.preference)
+
+    implementation(libs.glide)
     ksp(libs.glide.ksp)
+
+    implementation(libs.appiconloader.glide)
+
+    implementation(libs.fastscroll)
 
     implementation(libs.libsu.core)
     implementation(libs.libsu.io)

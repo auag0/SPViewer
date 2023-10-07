@@ -1,12 +1,17 @@
 package com.anago.spviewer.models
 
-import android.graphics.drawable.Drawable
+import android.content.pm.ApplicationInfo
+import android.content.pm.PackageInfo
 
 data class AppItem(
+    val packageInfo: PackageInfo,
     val name: String,
     val packageName: String,
-    val icon: Drawable,
-    val isSystem: Boolean,
     val installTime: Long,
     val updateTime: Long
-)
+) {
+    fun isSystemApp(): Boolean {
+        val appInfo = packageInfo.applicationInfo
+        return appInfo.flags and ApplicationInfo.FLAG_SYSTEM == ApplicationInfo.FLAG_SYSTEM
+    }
+}

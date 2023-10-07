@@ -22,6 +22,7 @@ import com.anago.spviewer.settings.AppListPrefs.SORT_APP_UPDATE_TIME
 import com.anago.spviewer.utils.FileUtils
 import com.anago.spviewer.viewmodels.AppListViewModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import me.zhanghai.android.fastscroll.FastScrollerBuilder
 
 class AppListActivity : AppCompatActivity() {
     private val viewModel: AppListViewModel by viewModels()
@@ -34,6 +35,10 @@ class AppListActivity : AppCompatActivity() {
         val appList: RecyclerView = findViewById(R.id.appList)
         appList.layoutManager = LinearLayoutManager(this)
         appList.adapter = appListAdapter
+        FastScrollerBuilder(appList)
+            .setPopupTextProvider(appListAdapter)
+            .useMd2Style()
+            .build()
 
         val refreshLayout: SwipeRefreshLayout = findViewById(R.id.refreshLayout)
         refreshLayout.setOnRefreshListener {

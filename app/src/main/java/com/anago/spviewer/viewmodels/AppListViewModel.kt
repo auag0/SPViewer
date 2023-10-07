@@ -1,7 +1,6 @@
 package com.anago.spviewer.viewmodels
 
 import android.app.Application
-import android.content.pm.ApplicationInfo.FLAG_SYSTEM
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -48,12 +47,10 @@ class AppListViewModel(private val app: Application) : AndroidViewModel(app) {
             val pm = app.packageManager
             val installedApps = pm.getCInstalledPackages(0).map { packageInfo ->
                 val appInfo = packageInfo.applicationInfo
-                val isSystem = appInfo.flags and FLAG_SYSTEM == FLAG_SYSTEM
                 AppItem(
+                    packageInfo = packageInfo,
                     name = appInfo.loadLabel(pm).toString(),
                     packageName = appInfo.packageName,
-                    icon = appInfo.loadIcon(pm),
-                    isSystem = isSystem,
                     installTime = packageInfo.firstInstallTime,
                     updateTime = packageInfo.lastUpdateTime
                 )
@@ -66,7 +63,7 @@ class AppListViewModel(private val app: Application) : AndroidViewModel(app) {
     private fun updateDisplayedAppList() {
         viewModelScope.launch(Dispatchers.Default) {
             _isRefreshing.postValue(true)
-            val displayedApps = appList.filterNot { it.isSystem }.let { apps ->
+            val displayedApps = appList.filterNot { it.isSystemApp() }.let { apps ->
                 if (searchQuery.isNullOrBlank()) {
                     when (sort) {
                         SORT_APP_NAME -> apps.sortedBy { it.name }
