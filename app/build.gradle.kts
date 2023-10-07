@@ -13,8 +13,8 @@ android {
         applicationId = "com.anago.spviewer"
         minSdk = 23
         targetSdk = 34
-        versionCode = 10_10_00
-        versionName = "1.1.0"
+        versionCode = 10_10_10
+        versionName = "1.1.1"
     }
 
     buildTypes {
